@@ -56,3 +56,9 @@ chmod +x "$desktop_entry"
 # Add the desktop entry to the applications menu
 xdg-desktop-menu install "$desktop_entry"
 
+# Add alias to zshrc if it doesn't exist
+if ! grep -q "alias cursor" ~/.zshrc; then
+    echo "Adding alias to zshrc"
+    echo "alias cursor='$cursor_app_image_path/$filename --no-sandbox'" >> ~/.zshrc
+fi
+
