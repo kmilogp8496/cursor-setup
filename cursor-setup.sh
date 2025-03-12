@@ -8,15 +8,15 @@ icon_url="https://miro.medium.com/v2/resize:fit:700/1*YLg8VpqXaTyRHJoStnMuog.png
 cursor_app_image_path="$HOME/cursor"
 cursor_icon_path="$cursor_app_image_path/cursor.png"
 
-# Download the icon if necessary
-if [ ! -f "$cursor_icon_path" ]; then
-    curl -L "$icon_url" -o "$cursor_icon_path"
-else
-    echo "Cursor icon already exists at $cursor_icon_path"
-fi
-
 # Create the cursor directory
 mkdir -p ~/cursor
+
+# Download the icon if necessary
+if [ ! -f "$cursor_icon_path" ]; then
+  curl -L "$icon_url" -o "$cursor_icon_path"
+else
+  echo "Cursor icon already exists at $cursor_icon_path"
+fi
 
 fetch_url="https://www.cursor.com/api/download?platform=linux-x64&releaseTrack=stable"
 
@@ -29,8 +29,8 @@ filename=$(basename "$download_url")
 
 # If file exists, exit
 if [ -f "$cursor_app_image_path/$filename" ]; then
-    echo "Cursor current version of app image already exists: $filename"
-    exit 0
+  echo "Cursor current version of app image already exists: $filename"
+  exit 0
 fi
 
 # Download the cursor app image
@@ -48,7 +48,7 @@ Exec=$cursor_app_image_path/$filename --no-sandbox
 Icon=$cursor_icon_path
 Type=Application
 Categories=Development;
-" > "$desktop_entry"
+" >"$desktop_entry"
 
 # Make the desktop entry executable
 chmod +x "$desktop_entry"
@@ -58,7 +58,6 @@ xdg-desktop-menu install "$desktop_entry"
 
 # Add alias to zshrc if it doesn't exist
 if ! grep -q "alias cursor" ~/.zshrc; then
-    echo "Adding alias to zshrc"
-    echo "alias cursor='$cursor_app_image_path/$filename --no-sandbox'" >> ~/.zshrc
+  echo "Adding alias to zshrc"
+  echo "alias cursor='$cursor_app_image_path/$filename --no-sandbox'" >>~/.zshrc
 fi
-
