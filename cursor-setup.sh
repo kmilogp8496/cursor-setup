@@ -44,7 +44,7 @@ curl -L "$download_url" -o "$cursor_app_image_path/$filename"
 chmod +x "$cursor_app_image_path/$filename"
 
 # Create a symbolic link to the cursor app image
-ln -s "$cursor_app_image_path/$filename" "$cursor_alias_path"
+ln -fns "$cursor_app_image_path/$filename" "$cursor_alias_path"
 
 # Create a desktop entry for the cursor app image
 desktop_entry="$HOME/.local/share/applications/personal-cursor.desktop"
