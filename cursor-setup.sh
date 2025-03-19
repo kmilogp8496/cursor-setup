@@ -7,6 +7,7 @@ icon_url="https://miro.medium.com/v2/resize:fit:700/1*YLg8VpqXaTyRHJoStnMuog.png
 # Cursor app image path
 cursor_app_image_path="$HOME/cursor"
 cursor_icon_path="$cursor_app_image_path/cursor.png"
+cursor_alias_path="$HOME/.local/bin/cursor"
 
 # Create the cursor directory
 mkdir -p ~/cursor
@@ -30,6 +31,9 @@ filename=$(basename "$download_url")
 # If file exists, exit
 if [ -f "$cursor_app_image_path/$filename" ]; then
   echo "Cursor current version of app image already exists: $filename"
+  echo "If you want to download a new version, please delete the current version and run the script again."
+  echo ""
+  echo "rm $cursor_app_image_path/$filename"
   exit 0
 fi
 
@@ -39,19 +43,29 @@ curl -L "$download_url" -o "$cursor_app_image_path/$filename"
 # Make the cursor app image executable
 chmod +x "$cursor_app_image_path/$filename"
 
+# Create a symbolic link to the cursor app image
+ln -s "$cursor_app_image_path/$filename" "$cursor_alias_path"
+
 # Create a desktop entry for the cursor app image
 desktop_entry="$HOME/.local/share/applications/personal-cursor.desktop"
 
-echo "[Desktop Entry]
-Name=Cursor AI IDE
-Exec=$cursor_app_image_path/$filename --no-sandbox
-Icon=$cursor_icon_path
-Type=Application
-Categories=Development;
-" >"$desktop_entry"
+# create the desktop entry if it doesn't exist
+if [ ! -f "$desktop_entry" ]; then
+  echo "Creating desktop entry at $desktop_entry"
 
-# Make the desktop entry executable
-chmod +x "$desktop_entry"
+  echo "[Desktop Entry]
+  Name=Cursor AI IDE
+  Exec=$cursor_alias_path --no-sandbox
+  Icon=$cursor_icon_path
+  Type=Application
+  Categories=Development;
+  " >"$desktop_entry"
+
+  # Make the desktop entry executable
+  chmod +x "$desktop_entry"
+else
+  echo "Desktop entry already exists at $desktop_entry"
+fi
 
 # Add the desktop entry to the applications menu
 xdg-desktop-menu install "$desktop_entry"
@@ -59,5 +73,7 @@ xdg-desktop-menu install "$desktop_entry"
 # Add alias to zshrc if it doesn't exist
 if ! grep -q "alias cursor" ~/.zshrc; then
   echo "Adding alias to zshrc"
-  echo "alias cursor='$cursor_app_image_path/$filename --no-sandbox'" >>~/.zshrc
+  echo "alias cursor='$cursor_alias_path --no-sandbox'" >>~/.zshrc
+else
+  echo "Alias already exists in zshrc"
 fi
