@@ -6,22 +6,28 @@ icon_url="https://miro.medium.com/v2/resize:fit:700/1*YLg8VpqXaTyRHJoStnMuog.png
 
 # Cursor app image path
 cursor_app_image_path="$HOME/cursor"
-cursor_icon_path="$cursor_app_image_path/cursor.png"
+cursor_icon_source_path="$cursor_app_image_path/cursor.png"
+cursor_icon_target_path="$HOME/.local/share/icons/cursor.png"
 cursor_alias_path="$HOME/.local/bin/cursor"
 
-# Create the cursor directory
-mkdir -p ~/cursor
+# Create necessary directories
+mkdir -p "$cursor_app_image_path"
+mkdir -p "$HOME/.local/share/icons"
+mkdir -p "$HOME/.local/bin"
+mkdir -p "$HOME/.local/share/applications"
 
 # Download the icon if necessary
-if [ ! -f "$cursor_icon_path" ]; then
-  curl -L "$icon_url" -o "$cursor_icon_path"
+if [ ! -f "$cursor_icon_source_path" ]; then
+  curl -L "$icon_url" -o "$cursor_icon_source_path"
 else
-  echo "Cursor icon already exists at $cursor_icon_path"
+  echo "Cursor icon already exists at $cursor_icon_source_path"
 fi
+
+# Copy icon to standard icon path
+cp "$cursor_icon_source_path" "$cursor_icon_target_path"
 
 fetch_url="https://www.cursor.com/api/download?platform=linux-x64&releaseTrack=stable"
 
-# Example download url: https://downloads.cursor.com/production/client/linux/x64/appimage/Cursor-0.46.11-ae378be9dc2f5f1a6a1a220c6e25f9f03c8d4e19.deb.glibc2.25-x86_64.AppImage
 # Get the download url
 download_url=$(curl -s $fetch_url | jq -r '.downloadUrl')
 
@@ -49,17 +55,19 @@ ln -fns "$cursor_app_image_path/$filename" "$cursor_alias_path"
 # Create a desktop entry for the cursor app image
 desktop_entry="$HOME/.local/share/applications/personal-cursor.desktop"
 
-# create the desktop entry if it doesn't exist
 if [ ! -f "$desktop_entry" ]; then
   echo "Creating desktop entry at $desktop_entry"
 
-  echo "[Desktop Entry]
-  Name=Cursor AI IDE
-  Exec=$cursor_alias_path --no-sandbox
-  Icon=$cursor_icon_path
-  Type=Application
-  Categories=Development;
-  " >"$desktop_entry"
+  cat >"$desktop_entry" <<EOL
+[Desktop Entry]
+Name=Cursor AI IDE
+Exec=$cursor_alias_path --no-sandbox
+Icon=cursor
+Type=Application
+Categories=Development;
+StartupNotify=true
+StartupWMClass=Cursor
+EOL
 
   # Make the desktop entry executable
   chmod +x "$desktop_entry"
