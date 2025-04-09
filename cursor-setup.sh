@@ -55,8 +55,7 @@ ln -fns "$cursor_app_image_path/$filename" "$cursor_alias_path"
 # Create a desktop entry for the cursor app image
 desktop_entry="$HOME/.local/share/applications/personal-cursor.desktop"
 
-if [ ! -f "$desktop_entry" ]; then
-  echo "Creating desktop entry at $desktop_entry"
+  echo "Replacing desktop entry at $desktop_entry"
 
   cat >"$desktop_entry" <<EOL
 [Desktop Entry]
@@ -69,11 +68,8 @@ StartupNotify=true
 StartupWMClass=Cursor
 EOL
 
-  # Make the desktop entry executable
-  chmod +x "$desktop_entry"
-else
-  echo "Desktop entry already exists at $desktop_entry"
-fi
+# Make the desktop entry executable
+chmod +x "$desktop_entry"
 
 # Add the desktop entry to the applications menu
 xdg-desktop-menu install "$desktop_entry"
