@@ -26,7 +26,7 @@ fi
 # Copy icon to standard icon path
 cp "$cursor_icon_source_path" "$cursor_icon_target_path"
 
-fetch_url="https://www.cursor.com/api/download?platform=linux-x64&releaseTrack=stable"
+fetch_url="https://cursor.com/api/download?platform=linux-x64&releaseTrack=stable"
 
 # Get the download url
 download_url=$(curl -s $fetch_url | jq -r '.downloadUrl')
@@ -55,9 +55,9 @@ ln -fns "$cursor_app_image_path/$filename" "$cursor_alias_path"
 # Create a desktop entry for the cursor app image
 desktop_entry="$HOME/.local/share/applications/personal-cursor.desktop"
 
-  echo "Replacing desktop entry at $desktop_entry"
+echo "Replacing desktop entry at $desktop_entry"
 
-  cat >"$desktop_entry" <<EOL
+cat >"$desktop_entry" <<EOL
 [Desktop Entry]
 Name=Cursor AI IDE
 Exec=$cursor_alias_path --no-sandbox
